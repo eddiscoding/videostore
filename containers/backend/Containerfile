@@ -1,0 +1,47 @@
+FROM serversideup/php:8.4-unit AS upstream
+
+WORKDIR /var/www/html
+
+USER root
+
+RUN curl -1sLf \
+'https://artifacts-cli.infisical.com/setup.deb.sh' \
+| bash && \
+apt-get update && \
+apt-get install -y git infisical && \
+apt-get clean && \
+rm -rf /var/lib/apt/lists/*
+
+# Install the intl extension with root permissions
+RUN install-php-extensions intl
+
+# Replace default image entrypoint
+COPY ./01-dump-env-files.sh /etc/entrypoint.d/
+RUN chmod +x /etc/entrypoint.d/01-dump-env-files.sh
+
+FROM upstream AS development
+RUN install-php-extensions xdebug
+
+# Copy XDebug configuration file
+COPY ./99-xdebug.ini /usr/local/etc/php/conf.d/
+
+USER www-data
+# Install Symfony CLI
+RUN curl -sS https://get.symfony.com/cli/installer | bash
+
+# Add it to user's PATH
+ENV PATH=/var/www/.symfony5/bin:$PATH
+
+ENV APP_ENV=dev
+ENV INFISICAL_ENVIRONMENT=development
+
+FROM upstream AS production
+USER www-data
+# Install Symfony CLI
+RUN curl -sS https://get.symfony.com/cli/installer | bash
+
+# Add it to user's PATH
+ENV PATH=/var/www/.symfony5/bin:$PATH
+
+ENV APP_ENV=prod
+ENV INFISICAL_ENVIRONMENT=production

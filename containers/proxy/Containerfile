@@ -1,0 +1,26 @@
+FROM caddy:2-builder-alpine AS builder
+
+RUN xcaddy build
+
+# Optional: Add plugins here
+# RUN xcaddy build \
+#     --with github.com/caddy-dns/cloudflare \
+#     --with github.com/mholt/caddy-l4
+
+### DEVELOPMENT STAGE. WATCHES CADDYFILE FOR CHANGES
+FROM caddy:2-alpine AS development
+
+# Copy the custom-built binary & default entrypoint
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+COPY ./files/Caddyfile /etc/caddy/Caddyfile
+
+# Launch Caddy with native file‐watching (for dev)
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--watch"]
+
+### PRODUCTION STAGE. WATCHES CADDYFILE FOR CHANGES
+FROM caddy:2-alpine AS production
+
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+COPY ./files/Caddyfile /etc/caddy/Caddyfile
+
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]

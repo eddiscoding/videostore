@@ -1,0 +1,92 @@
+name: video-store
+##########################################################################
+services:
+  proxy:
+    image: "video-store/proxy"
+    ports:
+      - 443:443
+      - 80:80
+    networks:
+      - proxy
+      - frontend
+      - backend
+    volumes:
+      - ./volumes/proxy/data:/data
+      - ./volumes/proxy/config:/config
+##########################################################################
+  frontend:
+    image: "video-store/frontend"
+    networks:
+      - frontend
+      - backend
+##########################################################################
+  backend:
+    image: "video-store/backend"
+    env_file:
+      - ./secrets/backend/.env
+    networks:
+      - backend
+      - database
+      - infisical-external
+##########################################################################
+  database:
+    image: "video-store/database"
+    secrets:
+      - POSTGRES_USER_FILE
+      - POSTGRES_PASSWORD_FILE
+      - POSTGRES_DB_FILE
+    environment:
+      - POSTGRES_DB_FILE=/run/secrets/POSTGRES_DB_FILE
+      - POSTGRES_USER_FILE=/run/secrets/POSTGRES_USER_FILE
+      - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD_FILE
+    volumes:
+      - ./volumes/database/data:/var/lib/postgresql/data
+    networks:
+      - database
+##########################################################################
+  infisical-backend:
+    image: infisical/infisical:latest-postgres
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./secrets/infisical/.env
+      - ./secrets/infisical/.env.database
+    networks:
+      - infisical-internal
+      - infisical-external
+##########################################################################
+  infisical-cache:
+    image: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - infisical-internal
+    volumes:
+      - ./volumes/infisical/redis:/data
+##########################################################################
+  infisical-db:
+    image: postgres:14-alpine
+    env_file:
+      - ./secrets/infisical/.env.database
+    networks:
+      - infisical-internal
+    volumes:
+      - ./volumes/infisical/db:/var/lib/postgresql/data
+
+##########################################################################
+secrets:
+  POSTGRES_DB_FILE:
+    file: ./secrets/database/POSTGRES_DB
+  POSTGRES_USER_FILE:
+    file: ./secrets/database/POSTGRES_USER
+  POSTGRES_PASSWORD_FILE:
+    file: ./secrets/database/POSTGRES_PASSWORD
+##########################################################################
+networks:
+  proxy:
+  frontend:
+  backend:
+  database:
+  infisical-internal:
+  infisical-external:
+##########################################################################

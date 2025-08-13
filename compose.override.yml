@@ -1,0 +1,54 @@
+services:
+  proxy:
+    build:
+      context: ./containers/proxy
+      target: development
+    volumes:
+      - ./containers/proxy/files/Caddyfile:/etc/caddy/Caddyfile
+    networks:
+      - mail
+
+  frontend:
+    build:
+      context: ./containers/frontend
+      target: development
+    ports:
+      - 5173:5173
+    volumes:
+        - ./containers/frontend/app:/app
+
+  backend:
+    build:
+      context: ./containers/backend
+      target: development
+    ports:
+      - 8080:8080
+    volumes:
+      - ./containers/backend/server:/var/www/html
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  database:
+    build:
+      context: ./containers/database
+    ports:
+      - 5432:5432
+
+  infisical-backend:
+    networks:
+      - mail
+
+  infisical-cache:
+    ports:
+      - 6379:6379
+
+  mail:
+    image: axllent/mailpit:v1.27
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - mail
+
+networks:
+  mail:
