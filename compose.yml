@@ -6,6 +6,9 @@ services:
     ports:
       - 443:443
       - 80:80
+    depends_on:
+      - frontend
+      - backend
     networks:
       - proxy
       - frontend
@@ -16,6 +19,8 @@ services:
 ##########################################################################
   frontend:
     image: "video-store/frontend"
+    depends_on:
+      - backend
     networks:
       - frontend
       - backend
@@ -24,6 +29,9 @@ services:
     image: "video-store/backend"
     env_file:
       - ./secrets/backend/.env
+    depends_on:
+      - database
+      - infisical-backend
     networks:
       - backend
       - database
@@ -51,6 +59,9 @@ services:
     env_file:
       - ./secrets/infisical/.env
       - ./secrets/infisical/.env.database
+    depends_on:
+      - infisical-database
+      - infisical-cache
     networks:
       - infisical-internal
       - infisical-external
