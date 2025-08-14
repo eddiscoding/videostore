@@ -3,6 +3,7 @@ services:
     build:
       context: ./containers/proxy
       target: development
+      dockerfile: Containerfile
     volumes:
       - ./containers/proxy/files/Caddyfile:/etc/caddy/Caddyfile
     networks:
@@ -12,15 +13,17 @@ services:
     build:
       context: ./containers/frontend
       target: development
+      dockerfile: Containerfile
     ports:
       - 5173:5173
     volumes:
         - ./containers/frontend/app:/app
-
+        - node_modules:/app/node_modules
   backend:
     build:
       context: ./containers/backend
       target: development
+      dockerfile: Containerfile
       args:
         - USER_ID=501
         - GROUP_ID=1000
@@ -34,6 +37,7 @@ services:
   database:
     build:
       context: ./containers/database
+      dockerfile: Containerfile
     ports:
       - 5432:5432
 
@@ -55,3 +59,6 @@ services:
 
 networks:
   mail:
+
+volumes:
+  node_modules: {}
