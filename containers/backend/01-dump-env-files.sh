@@ -23,6 +23,9 @@ export INFISICAL_TOKEN=$(
     --plain
 )
 
+echo "Script Running as: $(whoami)
+echo "UID: $(id -u) GUID: $(id -g)
+
 echo "Dumping variables into .env files..."
 
 dirs=$(echo "$INFISICAL_PATHS" | tr -d '[]' | tr ',' ' ')
