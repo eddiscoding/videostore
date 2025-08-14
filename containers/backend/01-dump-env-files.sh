@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Sync secrets to .env file
+# Sync secrets to .env.local for the current APP_ENV
 # IMPORTANT: Symfony NEEDS the variables to be in a .env file
 # in order to properly function
 
@@ -9,6 +9,7 @@
 : "${INFISICAL_CLIENT_SECRET:?Environment variable INFISICAL_CLIENT_SECRET not set}"
 : "${INFISICAL_DOMAIN:?Environment variable INFISICAL_DOMAIN not set}"
 : "${INFISICAL_PROJECT_ID:?Environment variable INFISICAL_PROJECT_ID not set}"
+: "${APP_ENV:?Environment variable APP_ENV not set}"
 
 echo "Generating token..."
 
@@ -23,36 +24,29 @@ export INFISICAL_TOKEN=$(
     --plain
 )
 
-echo "Script Running as: $(whoami)
-echo "UID: $(id -u) GUID: $(id -g)
+echo "Script Running as: $(whoami)"
+echo "UID: $(id -u) GUID: $(id -g)"
 
-echo "Dumping variables into .env files..."
+# Target file is always .env.local
+target_env_file=".env.local"
+echo "Dumping $APP_ENV secrets into $target_env_file..."
 
+# Parse paths from INFISICAL_PATHS env variable (assumed format: [path1,path2,...])
 dirs=$(echo "$INFISICAL_PATHS" | tr -d '[]' | tr ',' ' ')
 
-echo "" > .env.dev
-echo "" > .env.prod
+# Clear the file first
+echo "" > "$target_env_file"
 
+# Loop through paths and export secrets
 for dir in $dirs; do
-  echo "Exporting dev secrets for $dir..."
-  echo "#################################### ${dir}" >> .env.dev
+  echo "Exporting $APP_ENV secrets for $dir..."
+  echo "#################################### ${dir}" >> "$target_env_file"
   infisical export \
     --domain="$INFISICAL_DOMAIN" \
     --projectId="$INFISICAL_PROJECT_ID" \
-    --env=dev \
+    --env="$APP_ENV" \
     --path="/$dir" \
-    --format=dotenv >> ".env.dev"
-done
-
-for dir in $dirs; do
-  echo "Exporting prod secrets for $dir..."
-  echo "#################################### ${dir}" >> .env.prod
-  infisical export \
-    --domain="$INFISICAL_DOMAIN" \
-    --projectId="$INFISICAL_PROJECT_ID" \
-    --env=prod \
-    --path="/$dir" \
-    --format=dotenv >> ".env.prod"
+    --format=dotenv >> "$target_env_file"
 done
 
 echo "Resuming default image entrypoint scripts..."
