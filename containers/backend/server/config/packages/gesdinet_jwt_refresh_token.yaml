@@ -1,0 +1,20 @@
+gesdinet_jwt_refresh_token:
+    refresh_token_class: App\Entity\RefreshToken
+
+    # Change TTL
+    ttl: 86400
+
+    # Allow TTL to be refreshed for tokens
+    ttl_update: true
+
+    # Refresh token is sent on a cookie instead
+    # of being sent in JSON body
+    cookie:
+      enabled: true
+      same_site: none
+      path: /                      # default value
+      domain: .videostore.localhost
+      http_only: true              # default value
+      secure: true                 # default value
+      partitioned: false           # default value
+      remove_token_from_body: true # default value
