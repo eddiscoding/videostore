@@ -60,7 +60,7 @@ services:
       - ./secrets/infisical/.env
       - ./secrets/infisical/.env.database
     depends_on:
-      - infisical-database
+      - infisical-db
       - infisical-cache
     networks:
       - infisical-internal
