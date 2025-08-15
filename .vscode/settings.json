@@ -4,5 +4,6 @@
     "backend",
     "docs",
     "infrastructure"
-  ]
+  ],
+  "php.validate.executablePath": "/Users/eduardo/Proyectos/Docker/Vite/videostore/services/exe/backend/php"
 }

@@ -1,4 +1,0 @@
-#!/bin/sh
-
-# Call the command with all arguments
-lima nerdctl compose exec backend symfony "$@"
