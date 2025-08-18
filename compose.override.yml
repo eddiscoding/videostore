@@ -1,0 +1,19 @@
+services:
+  ############################################################################
+  backend:
+    build:
+      context: ./containers/backend
+      target: development
+      dockerfile: Containerfile
+    ports:
+      - 3333:3333
+      - 9229:9229
+    volumes:
+      - ./containers/backend/server:/app
+  ############################################################################
+  database:
+    build:
+      context: ./containers/database
+      dockerfile: Containerfile
+    ports:
+      - 5432:5432

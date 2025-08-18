@@ -1,0 +1,4 @@
+FROM postgres:16-alpine AS upstream
+
+HEALTHCHECK --interval=2s --timeout=5s --retries=10 \
+  CMD pg_isready -d "$(cat $POSTGRES_DB_FILE)" -U "$(cat $PGUSER_FILE)" || exit 1

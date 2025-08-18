@@ -1,0 +1,43 @@
+### Common compose.yml file
+services:
+  ##########################################################################
+  backend:
+    image: "video-store/backend"
+    env_file:
+      - ./secrets/backend/.env
+    depends_on:
+      - database
+    networks:
+      - backend
+      - database
+  ##########################################################################
+  database:
+    image: "video-store/database"
+    secrets:
+      - POSTGRES_USER_FILE
+      - POSTGRES_PASSWORD_FILE
+      - POSTGRES_DB_FILE
+    environment:
+      - POSTGRES_DB_FILE=/run/secrets/POSTGRES_DB_FILE
+      - POSTGRES_USER_FILE=/run/secrets/POSTGRES_USER_FILE
+      - POSTGRES_PASSWORD_FILE=/run/secrets/POSTGRES_PASSWORD_FILE
+      - PGUSER_FILE=/run/secrets/POSTGRES_USER_FILE
+    volumes:
+      - ./volumes/backend/database/data:/var/lib/postgresql/data
+    networks:
+      - database
+  ##########################################################################
+
+############################################################################
+secrets:
+  POSTGRES_DB_FILE:
+    file: ./secrets/database/POSTGRES_DB
+  POSTGRES_USER_FILE:
+    file: ./secrets/database/POSTGRES_USER
+  POSTGRES_PASSWORD_FILE:
+    file: ./secrets/database/POSTGRES_PASSWORD
+############################################################################
+networks:
+  backend:
+  database:
+##########################################################################
