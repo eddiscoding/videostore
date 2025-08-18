@@ -1,0 +1,21 @@
+api.videostore.localhost {
+    @options method OPTIONS
+    header {
+        Access-Control-Allow-Origin "https://videostore.localhost"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization"
+        Access-Control-Allow-Credentials "true"
+        Vary "Origin"
+    }
+
+    # Handle preflight requests directly
+    respond @options 204
+
+    reverse_proxy http://backend:3333
+    tls internal
+}
+
+mail.videostore.localhost {
+    reverse_proxy http://mail:8025
+    tls internal
+}
