@@ -1,6 +1,7 @@
 {
   "conventionalCommits.scopes": [
     "architecture",
-    "backend"
+    "backend",
+    "external-services"
   ],
 }
