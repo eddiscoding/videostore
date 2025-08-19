@@ -38,6 +38,15 @@ services:
       - 8025:8025
     networks:
       - mail
-##############################################################################
+  ##############################################################################
+  database-infisical:
+    build:
+      context: ./containers/database
+      dockerfile: Containerfile
+  ##############################################################################
+  backend-infisical:
+    networks:
+      - mail
+
 networks:
   mail:

@@ -1,11 +1,21 @@
 # ---------- Base Builder ----------
-FROM node:22-alpine AS base
+FROM node:22-alpine AS upstream
+
+RUN npm install -g @infisical/cli
+
+COPY ./entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+ENTRYPOINT [ "/usr/local/bin/docker-entrypoint" ]
+
+FROM upstream AS base
 
 WORKDIR /app
 COPY ./server/ ./
 
 # ---------- Development Stage ----------
 FROM base AS development
+
+ENV NODE_ENV=development
 
 # Install dependencies
 RUN npm ci
@@ -17,15 +27,14 @@ RUN npm run build
 
 WORKDIR /app/build
 
-COPY /app/.env* .
 RUN npm ci --omit="dev"
 
 # ---------- Production Runtime ----------
-FROM node:22-alpine AS production
+FROM upstream AS production
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 # Only copy production output
 COPY --from=build /app/build/ .
-
-CMD ["node", "bin/server.js"]

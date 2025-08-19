@@ -19,3 +19,8 @@ mail.videostore.localhost {
     reverse_proxy http://mail:8025
     tls internal
 }
+
+secrets.videostore.localhost {
+    reverse_proxy http://backend-infisical:8080
+    tls internal
+}

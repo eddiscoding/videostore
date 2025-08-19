@@ -7,9 +7,11 @@ services:
       - ./secrets/backend/.env
     depends_on:
       - database
+      - backend-infisical
     networks:
       - backend
       - database
+      - infisical-external
   ##########################################################################
   database:
     image: "video-store/database"
@@ -34,13 +36,46 @@ services:
       - 80:80
     depends_on:
       - backend
+      - backend-infisical
     networks:
       - proxy
       - backend
     volumes:
       - ./volumes/proxy/data:/data
       - ./volumes/proxy/config:/config
-############################################################################
+  ############################################################################
+  backend-infisical:
+    image: infisical/infisical:latest-postgres
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./secrets/infisical/.env
+      - ./secrets/infisical/.env.database
+    depends_on:
+      - database-infisical
+      - cache-infisical
+    networks:
+      - infisical-internal
+      - infisical-external
+  ############################################################################
+  cache-infisical:
+    image: redis:8-alpine
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - infisical-internal
+    volumes:
+      - ./volumes/infisical/redis:/data
+  ############################################################################
+  database-infisical:
+    image: "video-store/database-infisical"
+    env_file:
+      - ./secrets/infisical/.env.database
+    networks:
+      - infisical-internal
+    volumes:
+      - ./volumes/infisical/db:/var/lib/postgresql/data
+
 secrets:
   POSTGRES_DB_FILE:
     file: ./secrets/database/POSTGRES_DB
@@ -53,4 +88,6 @@ networks:
   backend:
   database:
   proxy:
+  infisical-internal:
+  infisical-external:
 ##########################################################################
