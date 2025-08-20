@@ -17,4 +17,11 @@ export default [
       'pnpm/json-enforce-catalog': 'off',
     },
   },
+  {
+    rules: {
+      quotes: ['error', 'double', { avoidEscape: true }],
+      semi: ['error', 'always'],
+      'eol-last': ['error', 'always'],
+    },
+  },
 ]
