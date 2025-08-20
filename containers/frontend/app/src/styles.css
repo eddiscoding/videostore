@@ -1,1 +1,7 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+
+/************************************************* HeroUI Setup */
+@plugin "./components/lib/hero-ui.ts";
+@source "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
+@custom-variant dark (&:is(.dark *));
+/************************************************* HeroUI Setup */
