@@ -52,10 +52,10 @@ done
 
 # Run environment-specific command
 if [ "$NODE_ENV" = "development" ]; then
-  echo "Running development command..."
-  npm run dev
+  echo "Running development startup command..."
+  watchexec -r -w ./ --poll='5s' 'npm run dev'
 elif [ "$NODE_ENV" = "production" ]; then
-  echo "Running production command..."
+  echo "Running production startup command..."
   node bin/server.js
 else
   echo "Unknown NODE_ENV: $NODE_ENV"

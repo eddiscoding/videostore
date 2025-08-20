@@ -17,9 +17,11 @@ FROM base AS development
 
 ENV NODE_ENV=development
 
+# Install watchexec
+RUN apk add --no-cache watchexec
+
 # Install dependencies
 RUN npm ci
-CMD ["npm", "run", "dev"]
 
 # ---------- Production Build ----------
 FROM base AS build

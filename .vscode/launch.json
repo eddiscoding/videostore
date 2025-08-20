@@ -1,0 +1,21 @@
+{
+  // Use IntelliSense para saber los atributos posibles.
+  // Mantenga el puntero para ver las descripciones de los existentes atributos.
+  // Para más información, visite: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Videostore - Backend - Container",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": {
+        "delay": 2000,
+        "maxAttempts": 3
+      },
+      "localRoot": "${workspaceFolder}/containers/backend/server/",
+      "remoteRoot": "/app",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
