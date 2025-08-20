@@ -14,10 +14,13 @@ FROM caddy:2-alpine AS development
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 COPY ./files/Caddyfile /etc/caddy/Caddyfile
 
-# Launch Caddy with native file‐watching (for dev)
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--watch"]
+# Launch Caddy with file‐watching (for dev)
 
-### PRODUCTION STAGE. WATCHES CADDYFILE FOR CHANGES
+# Install watchexec
+RUN apk add --no-cache watchexec
+CMD ["watchexec", "-r", "-w", "/etc/caddy/Caddyfile", "--poll=5s", "caddy", "run", "--config", "/etc/caddy/Caddyfile"]
+
+### PRODUCTION STAGE
 FROM caddy:2-alpine AS production
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy

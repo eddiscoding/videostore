@@ -24,3 +24,8 @@ secrets.videostore.localhost {
     reverse_proxy http://backend-infisical:8080
     tls internal
 }
+
+videostore.localhost {
+    reverse_proxy http://frontend:3000
+    tls internal
+}

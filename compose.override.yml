@@ -19,7 +19,6 @@ services:
       dockerfile: Containerfile
     ports:
       - 5432:5432
-
   ############################################################################
   proxy:
     build:
@@ -47,6 +46,13 @@ services:
   backend-infisical:
     networks:
       - mail
-
+  ##############################################################################
+  frontend:
+    build:
+      context: ./containers/frontend
+      dockerfile: Containerfile
+      target: development
+    ports:
+      - 3000:3000
 networks:
   mail:
