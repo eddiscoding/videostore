@@ -2,6 +2,18 @@
   "conventionalCommits.scopes": [
     "architecture",
     "backend",
-    "external-services"
+    "external-services",
+    "frontend"
   ],
+
+  // Ignore TanStack Router generated route metadata file
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
+  }
 }
