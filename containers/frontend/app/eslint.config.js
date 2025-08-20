@@ -1,6 +1,8 @@
 //  @ts-check
 
 import { tanstackConfig } from "@tanstack/eslint-config";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
   ...tanstackConfig,
@@ -22,6 +24,19 @@ export default [
       quotes: ["error", "double", { avoidEscape: true }],
       semi: ["error", "always"],
       "eol-last": ["error", "always"],
+    },
+  },
+
+  // React Plugins
+  {
+    files: ["**/*.{ts,tsx}"],
+    plugins: {
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+    },
+    rules: {
+      ...reactHooks.configs["recommended-latest"].rules,
+      ...reactRefresh.configs.vite.rules,
     },
   },
 ];

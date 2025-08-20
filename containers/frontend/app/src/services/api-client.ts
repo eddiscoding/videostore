@@ -1,5 +1,6 @@
 import wretch from "wretch";
-import { useAuthStore } from "@/stores/auth-store";
+import FormDataAddon from "wretch/addons/formData";
+import QueryStringAddon from "wretch/addons/queryString";
 
 const getDefaultConfig = () => {
   // TODO: Environment Variables?
@@ -7,16 +8,14 @@ const getDefaultConfig = () => {
   const HOST_API = "api.videostore.localhost";
   const SUBPATH_API = "/api/v1";
 
-  return wretch(`${SCHEME_API}${HOST_API}${SUBPATH_API}`);
+  return wretch(`${SCHEME_API}${HOST_API}${SUBPATH_API}`)
+    .addon(FormDataAddon)
+    .addon(QueryStringAddon);
 };
 
-export const useAPIClient = () => {
-  const { token } = useAuthStore();
-
-  // Get client with default configuration
+export const createAPIClient = (token: string) => {
   const client = getDefaultConfig();
 
-  // Add Authorization header if there is a token stored
   if (token) {
     client.auth(`Bearer ${token}`);
   }

@@ -13,6 +13,8 @@ export default class AuthController {
     // Return the generated token
     response.safeStatus(200)
     response.send({
+      status: true,
+      message: '',
       data: {
         token,
       },

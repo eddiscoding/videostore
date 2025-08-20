@@ -8,52 +8,88 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as IndexRouteImport } from "./routes/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as NoAuthLoginRouteImport } from './routes/_no-auth/login'
+import { Route as AuthDashboardIndexRouteImport } from './routes/_auth/dashboard/index'
 
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const NoAuthLoginRoute = NoAuthLoginRouteImport.update({
+  id: '/_no-auth/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthDashboardIndexRoute = AuthDashboardIndexRouteImport.update({
+  id: '/_auth/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
+  '/': typeof IndexRoute
+  '/login': typeof NoAuthLoginRoute
+  '/dashboard': typeof AuthDashboardIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
+  '/': typeof IndexRoute
+  '/login': typeof NoAuthLoginRoute
+  '/dashboard': typeof AuthDashboardIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_no-auth/login': typeof NoAuthLoginRoute
+  '/_auth/dashboard/': typeof AuthDashboardIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/";
-  id: "__root__" | "/";
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/login' | '/dashboard'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/login' | '/dashboard'
+  id: '__root__' | '/' | '/_no-auth/login' | '/_auth/dashboard/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
+  IndexRoute: typeof IndexRoute
+  NoAuthLoginRoute: typeof NoAuthLoginRoute
+  AuthDashboardIndexRoute: typeof AuthDashboardIndexRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_no-auth/login': {
+      id: '/_no-auth/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof NoAuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth/dashboard/': {
+      id: '/_auth/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthDashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-};
+  NoAuthLoginRoute: NoAuthLoginRoute,
+  AuthDashboardIndexRoute: AuthDashboardIndexRoute,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
