@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.2",
+    "@hookform/resolvers": "^5.2.1",
     "@tailwindcss/vite": "^4.1.12",
     "@tanstack/react-devtools": "^0.4.2",
     "@tanstack/react-router": "^1.131.27",
@@ -22,8 +23,10 @@
     "motion": "^12.23.12",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.62.0",
     "tailwindcss": "^4.1.12",
     "wretch": "^2.11.0",
+    "zod": "^4.0.17",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

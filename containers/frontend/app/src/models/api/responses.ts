@@ -4,5 +4,5 @@ export type BasicResponse = {
 };
 
 export type ResponseWithData<T> = BasicResponse & {
-  data: T
+  data: T;
 };

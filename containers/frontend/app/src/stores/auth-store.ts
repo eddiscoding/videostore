@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import type { ResponseWithData } from "models/api/responses";
-import type { Token, TokenResponse } from "models/api/login-payload";
+import type { ResponseWithData } from "@/models/api/responses";
+import type { Token, TokenResponse } from "@/models/api/login-payload";
 import { createAPIClient } from "@/services/api-client";
 
 type RetrieveTokenPayload = {
