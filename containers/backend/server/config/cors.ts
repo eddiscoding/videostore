@@ -8,12 +8,12 @@ import { defineConfig } from '@adonisjs/cors'
  */
 const corsConfig = defineConfig({
   enabled: true,
-  origin: true,
-  methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
-  headers: true,
-  exposeHeaders: [],
+  origin: ['https://videostore.localhost'],
+  methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  headers: ['Content-Type', 'Authorization'],
+  exposeHeaders: [], // add any headers you want visible to frontend
   credentials: true,
-  maxAge: 90,
+  maxAge: 90, // seconds
 })
 
 export default corsConfig

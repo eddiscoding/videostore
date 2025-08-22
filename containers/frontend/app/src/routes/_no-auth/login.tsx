@@ -7,13 +7,16 @@ import {
   Divider,
   Form,
   Input,
+  addToast,
 } from "@heroui/react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
 import type { z } from "zod";
-import { CustomLink } from "@/components/custom-link";
+import { useAuthStore } from "@/stores/auth-store";
 import { LoginFormSchema } from "@/models/forms/login-form-schema";
+import { CustomLink } from "@/components/custom-link";
 
 export const Route = createFileRoute("/_no-auth/login")({
   component: RouteComponent,
@@ -24,20 +27,73 @@ function RouteComponent() {
     resolver: zodResolver(LoginFormSchema),
     mode: "onChange",
   });
-  const onSubmit = ({ email, password }: z.input<typeof LoginFormSchema>) => {
-    alert(`{"email": "${email}", "password": "${password}"}`);
+
+  const [isWorking, setIsWorking] = useState(false);
+  const navigate = useNavigate();
+
+  const { retrieveToken } = useAuthStore();
+
+  const onSubmit = async (data: z.input<typeof LoginFormSchema>) => {
+    setIsWorking(true);
+    const result = await retrieveToken(data);
+
+    if (!result.success) {
+      const { error } = result;
+      switch (error) {
+        case "BAD_REQUEST":
+          // Wrong credentials
+          addToast({
+            title: "Incorrect user or password.",
+            color: "danger",
+            variant: "flat",
+          });
+          break;
+        case "UNAUTHORIZED":
+          // Should never be reached
+          addToast({
+            title: "Unauthorized to access this resource.",
+            color: "danger",
+            variant: "flat",
+          });
+          break;
+        case "NETWORK_ERROR":
+          // Server unreachable?
+          addToast({
+            title: "The server is currently unreachable.",
+            color: "danger",
+            variant: "flat",
+          });
+          break;
+        case "UNKNOWN":
+          // Unknown error
+          addToast({
+            title:
+              "Unkown error. Please try again later. If this problem persists, talk with the administrator.",
+            color: "danger",
+            variant: "flat",
+          });
+      }
+      setIsWorking(false);
+      return;
+    }
+
+    setIsWorking(false);
+
+    // Succesful login. Redirect to dashboard
+    navigate({
+      to: "/dashboard",
+    });
   };
 
   return (
     <>
       <div className="min-h-screen flex flex-col items-center justify-center">
         <Form onSubmit={handleSubmit(onSubmit)} validationBehavior="aria">
-          <Card className="min-h-80">
+          <Card className="lg:min-w-96">
             <CardHeader className="p-4 flex flex-col gap-2">
               <h1 className="text-[1.25rem] font-bold">
                 Welcome to VIDEOSTORE
               </h1>
-              <h2>Introduce your credentials to access your dashboard</h2>
             </CardHeader>
 
             <Divider />
@@ -101,6 +157,7 @@ function RouteComponent() {
                 color="primary"
                 variant="solid"
                 size="md"
+                isLoading={isWorking}
               >
                 Submit
               </Button>

@@ -9,6 +9,13 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    host: "0.0.0.0",
+    port: 3000,
+    watch: {
+      usePolling: true,
+    },
+  },
   plugins: [
     tanstackRouter({ autoCodeSplitting: true }),
     viteReact(),
@@ -21,11 +28,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
-    },
-  },
-  server: {
-    watch: {
-      usePolling: true, // Necessary for Docker volumes
     },
   },
 });

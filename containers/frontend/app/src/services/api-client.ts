@@ -14,10 +14,10 @@ const getDefaultConfig = () => {
 };
 
 export const createAPIClient = (token: string) => {
-  const client = getDefaultConfig();
+  let client = getDefaultConfig();
 
-  if (token) {
-    client.auth(`Bearer ${token}`);
+  if ("" != token) {
+    client = client.auth(`Bearer ${token}`);
   }
 
   return client;

@@ -39,4 +39,28 @@ export default class AuthController {
     response.safeStatus(200)
     response.send('')
   }
+
+  async refresh({ response, auth }: HttpContext) {
+    const user = auth.user
+
+    if (user) {
+      // Invalidate previous token
+      await auth.use('api').invalidateToken()
+
+      // Issue new token
+      const token = await auth.use('api').createToken(user)
+
+      response.safeStatus(200)
+      response.send({
+        status: true,
+        message: '',
+        data: {
+          token,
+        },
+      })
+    } else {
+      response.safeStatus(400)
+      response.send('')
+    }
+  }
 }

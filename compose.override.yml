@@ -54,5 +54,7 @@ services:
       target: development
     ports:
       - 3000:3000
+    volumes:
+      - ./containers/frontend/app:/app
 networks:
   mail:

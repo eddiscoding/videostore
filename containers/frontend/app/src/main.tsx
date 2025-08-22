@@ -1,7 +1,7 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
@@ -33,6 +33,7 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <HeroUIProvider>
+        <ToastProvider />
         <RouterProvider router={router} />
       </HeroUIProvider>
     </StrictMode>,

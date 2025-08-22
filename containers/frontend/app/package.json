@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000 --host 0.0.0.0",
+    "dev": "vite",
     "build": "vite build && tsc",
     "serve": "vite preview",
     "test": "vitest run",
@@ -19,6 +19,7 @@
     "@tanstack/react-router": "^1.131.27",
     "@tanstack/react-router-devtools": "^1.131.27",
     "@tanstack/router-plugin": "^1.131.27",
+    "date-fns": "^4.1.0",
     "immer": "^10.1.1",
     "motion": "^12.23.12",
     "react": "^19.1.1",

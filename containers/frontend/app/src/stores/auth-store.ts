@@ -1,14 +1,21 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import { differenceInHours, parseISO } from "date-fns";
 import type { ResponseWithData } from "@/models/api/responses";
-import type { Token, TokenResponse } from "@/models/api/login-payload";
+import type { TokenResponse } from "@/models/api/login-payload";
 import { createAPIClient } from "@/services/api-client";
 
 type RetrieveTokenPayload = {
   email: string;
   password: string;
 };
+
+type AuthError = "BAD_REQUEST" | "UNAUTHORIZED" | "NETWORK_ERROR" | "UNKNOWN";
+
+type Result<T> =
+  | { success: true; data: T }
+  | { success: false; error: AuthError };
 
 type State = {
   token: string;
@@ -17,9 +24,9 @@ type State = {
 
 type Actions = {
   isTokenValid: () => Promise<boolean>;
-  isTokenExpiringSoon: () => Promise<boolean>;
+  isTokenExpiringSoon: () => boolean;
 
-  retrieveToken: (credentials: RetrieveTokenPayload) => Promise<void>;
+  retrieveToken: (credentials: RetrieveTokenPayload) => Promise<Result<void>>;
   refreshToken: () => Promise<boolean>;
 };
 
@@ -30,19 +37,49 @@ export const useAuthStore = create<State & Actions>()(
       expiresAt: "",
 
       isTokenValid: async () => {
-        const { token } = get();
+        const { token, isTokenExpiringSoon, refreshToken } = get();
+        const client = createAPIClient(token);
 
         if (!token) {
           return false;
         }
 
+        try {
+          const response = await client.get("/healthcheck/auth").res();
+          if (response.ok) {
+            try {
+              if (isTokenExpiringSoon()) {
+                await refreshToken();
+                console.info("Token refreshed correctly.");
+              }
+            } catch (error) {
+              console.info("Token could not be refreshed.");
+            }
+
+            return true;
+          }
+        } catch (error) {
+          return false;
+        }
+
         return false;
       },
-      isTokenExpiringSoon: async () => {
-        const { token } = get();
+      isTokenExpiringSoon: () => {
+        const { token, expiresAt } = get();
 
-        if (!token) {
-          return false;
+        if (!token || !expiresAt) {
+          throw new Error(
+            "Undesired state. isTokenExpiringSoon should not be called before actually owning a token.",
+          );
+        }
+
+        const now = new Date();
+        const parsedDate = parseISO(expiresAt);
+        const diffHours = Math.floor(differenceInHours(parsedDate, now));
+
+        if (diffHours < 2) {
+          // Token is close to expire, it should be refreshed
+          return true;
         }
 
         return false;
@@ -54,11 +91,14 @@ export const useAuthStore = create<State & Actions>()(
         try {
           const { data } = await client
             .post({ email, password }, "/auth/login")
-            .badRequest((error) => {
-              console.error("BAD REQUEST", error);
+            .badRequest(() => {
+              throw { type: "BAD_REQUEST" } as const;
             })
-            .unauthorized((error) => {
-              console.error("UNAUTHORIZED", error);
+            .error(422, () => {
+              throw { type: "BAD_REQUEST" } as const;
+            })
+            .unauthorized(() => {
+              throw { type: "UNAUTHORIZED" } as const;
             })
             .json<ResponseWithData<TokenResponse>>();
 
@@ -66,18 +106,43 @@ export const useAuthStore = create<State & Actions>()(
             state.token = data.token.token;
             state.expiresAt = data.token.expiresAt;
           });
-        } catch (error) {
-          console.error("RETRIEVE TOKEN ERROR", error);
+
+          return { success: true, data: undefined };
+        } catch (err: any) {
+          if (err?.type === "BAD_REQUEST" || err?.type === "UNAUTHORIZED") {
+            return { success: false, error: err.type };
+          }
+
+          if (err instanceof TypeError) {
+            // fetch network failure
+            return { success: false, error: "NETWORK_ERROR" };
+          }
+
+          return { success: false, error: "UNKNOWN" };
         }
       },
       refreshToken: async () => {
         const { token } = get();
+        const client = createAPIClient(token);
 
         if (!token) {
           return false;
         }
 
-        return false;
+        try {
+          const { data } = await client
+            .post({}, "/auth/refresh")
+            .json<ResponseWithData<TokenResponse>>();
+
+          set((state) => {
+            state.token = data.token.token;
+            state.expiresAt = data.token.expiresAt;
+          });
+        } catch (error) {
+          return false;
+        }
+
+        return true;
       },
     })),
     {
