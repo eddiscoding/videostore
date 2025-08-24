@@ -23,20 +23,9 @@ RUN apk add --no-cache watchexec
 # Install dependencies
 RUN npm ci
 
-# ---------- Production Build ----------
-FROM base AS build
-RUN npm run build
-
-WORKDIR /app/build
-
-RUN npm ci --omit="dev"
-
 # ---------- Production Runtime ----------
-FROM upstream AS production
-
-WORKDIR /app
+FROM base AS production
 
 ENV NODE_ENV=production
 
-# Only copy production output
-COPY --from=build /app/build/ .
+RUN npm ci --omit="dev"
