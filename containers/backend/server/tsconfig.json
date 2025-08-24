@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "commonjs",
+    "module": "nodenext",
     "strict": true,
     "esModuleInterop": true,
     "noEmit": true,
     "sourceMap": true,
     "allowImportingTsExtensions": true,
     "types": ["node"], // Add types for Node.js and Jest
-    "moduleResolution": "node", // Ensure module resolution is set to node
+    "moduleResolution": "nodenext", // Ensure module resolution is set to node
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]

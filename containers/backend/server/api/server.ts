@@ -6,6 +6,8 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from "fastify-type-provider-zod";
+import { env } from "@/api/env";
+import { routes } from "./routes";
 
 export async function buildServer() {
   const server = fastify({
@@ -19,13 +21,13 @@ export async function buildServer() {
   await server.register(swagger, {
     openapi: {
       info: {
-        title: "Fastify Template API",
+        title: "Videostore Backend API",
         description: "API documentation using Swagger",
         version: "1.0.0",
       },
       servers: [
         {
-          url: "http://localhost:3000",
+          url: `http://${env.HOST}:${env.PORT}`,
         },
       ],
     },
@@ -40,7 +42,7 @@ export async function buildServer() {
   });
 
   // Register routes
-  await server.register(import("./routes"));
+  await server.register(routes);
 
   return server;
 }
