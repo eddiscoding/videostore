@@ -1,4 +1,5 @@
 import {
+  addToast,
   Button,
   Card,
   CardBody,
@@ -7,16 +8,15 @@ import {
   Divider,
   Form,
   Input,
-  addToast,
 } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { Controller, useForm } from "react-hook-form";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import type { z } from "zod";
-import { useAuthStore } from "@/stores/auth-store";
-import { LoginFormSchema } from "@/models/forms/login-form-schema";
 import { CustomLink } from "@/components/custom-link";
+import { LoginFormSchema } from "@/models/forms/login-form-schema";
+import { useAuthStore } from "@/stores/auth-store";
 
 export const Route = createFileRoute("/_no-auth/login")({
   component: RouteComponent,
@@ -86,85 +86,81 @@ function RouteComponent() {
   };
 
   return (
-    <>
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <Form onSubmit={handleSubmit(onSubmit)} validationBehavior="aria">
-          <Card className="lg:min-w-96">
-            <CardHeader className="p-4 flex flex-col gap-2">
-              <h1 className="text-[1.25rem] font-bold">
-                Welcome to VIDEOSTORE
-              </h1>
-            </CardHeader>
+    <div className="min-h-screen flex flex-col items-center justify-center">
+      <Form onSubmit={handleSubmit(onSubmit)} validationBehavior="aria">
+        <Card className="lg:min-w-96">
+          <CardHeader className="p-4 flex flex-col gap-2">
+            <h1 className="text-[1.25rem] font-bold">Welcome to VIDEOSTORE</h1>
+          </CardHeader>
 
-            <Divider />
+          <Divider />
 
-            <CardBody className="p-4 flex flex-col gap-4">
-              <Controller
-                control={control}
-                name="email"
-                render={({
-                  field: { name, value, onChange, onBlur, ref },
-                  fieldState: { invalid, error },
-                }) => (
-                  <Input
-                    type="email"
-                    ref={ref}
-                    isRequired
-                    errorMessage={error?.message}
-                    isInvalid={invalid}
-                    label="Email"
-                    name={name}
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                  />
-                )}
-              />
+          <CardBody className="p-4 flex flex-col gap-4">
+            <Controller
+              control={control}
+              name="email"
+              render={({
+                field: { name, value, onChange, onBlur, ref },
+                fieldState: { invalid, error },
+              }) => (
+                <Input
+                  type="email"
+                  ref={ref}
+                  isRequired
+                  errorMessage={error?.message}
+                  isInvalid={invalid}
+                  label="Email"
+                  name={name}
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                />
+              )}
+            />
 
-              <Controller
-                control={control}
-                name="password"
-                render={({
-                  field: { name, value, onChange, onBlur, ref },
-                  fieldState: { invalid, error },
-                }) => (
-                  <Input
-                    ref={ref}
-                    type="password"
-                    isRequired
-                    errorMessage={error?.message}
-                    isInvalid={invalid}
-                    label="Password"
-                    name={name}
-                    value={value}
-                    onBlur={onBlur}
-                    onChange={onChange}
-                  />
-                )}
-              />
-            </CardBody>
+            <Controller
+              control={control}
+              name="password"
+              render={({
+                field: { name, value, onChange, onBlur, ref },
+                fieldState: { invalid, error },
+              }) => (
+                <Input
+                  ref={ref}
+                  type="password"
+                  isRequired
+                  errorMessage={error?.message}
+                  isInvalid={invalid}
+                  label="Password"
+                  name={name}
+                  value={value}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                />
+              )}
+            />
+          </CardBody>
 
-            <Divider />
+          <Divider />
 
-            <CardFooter className="p-4 flex flex-col items-end justify-center gap-2 w-full">
-              <CustomLink color="secondary" to="/login">
-                Forgot your password?
-              </CustomLink>
+          <CardFooter className="p-4 flex flex-col items-end justify-center gap-2 w-full">
+            <CustomLink color="secondary" to="/login">
+              Forgot your password?
+            </CustomLink>
 
-              <Button
-                type="submit"
-                className="w-1/2"
-                color="primary"
-                variant="solid"
-                size="md"
-                isLoading={isWorking}
-              >
-                Submit
-              </Button>
-            </CardFooter>
-          </Card>
-        </Form>
-      </div>
-    </>
+            <Button
+              type="submit"
+              className="w-1/2"
+              color="primary"
+              variant="solid"
+              size="md"
+              isLoading={isWorking}
+            >
+              Submit
+            </Button>
+          </CardFooter>
+        </Card>
+      </Form>
+    </div>
   );
 }

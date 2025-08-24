@@ -1,12 +1,10 @@
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { HeroUIProvider, ToastProvider } from "@heroui/react";
-
+import reportWebVitals from "./reportWebVitals.ts";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-
-import reportWebVitals from "./reportWebVitals.ts";
 import "./styles.css";
 
 // Create a new router instance

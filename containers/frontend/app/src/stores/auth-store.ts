@@ -1,9 +1,9 @@
+import { differenceInHours, parseISO } from "date-fns";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { differenceInHours, parseISO } from "date-fns";
-import type { ResponseWithData } from "@/models/api/responses";
 import type { TokenResponse } from "@/models/api/login-payload";
+import type { ResponseWithData } from "@/models/api/responses";
 import { createAPIClient } from "@/services/api-client";
 
 type RetrieveTokenPayload = {
@@ -52,13 +52,13 @@ export const useAuthStore = create<State & Actions>()(
                 await refreshToken();
                 console.info("Token refreshed correctly.");
               }
-            } catch (error) {
+            } catch (_error) {
               console.info("Token could not be refreshed.");
             }
 
             return true;
           }
-        } catch (error) {
+        } catch (_error) {
           return false;
         }
 
@@ -108,9 +108,12 @@ export const useAuthStore = create<State & Actions>()(
           });
 
           return { success: true, data: undefined };
-        } catch (err: any) {
-          if (err?.type === "BAD_REQUEST" || err?.type === "UNAUTHORIZED") {
-            return { success: false, error: err.type };
+        } catch (err: unknown) {
+          if (err && typeof err === "object" && "type" in err) {
+            const e = err as { type?: string };
+            if (e.type === "BAD_REQUEST" || e.type === "UNAUTHORIZED") {
+              return { success: false, error: e.type };
+            }
           }
 
           if (err instanceof TypeError) {
@@ -138,7 +141,7 @@ export const useAuthStore = create<State & Actions>()(
             state.token = data.token.token;
             state.expiresAt = data.token.expiresAt;
           });
-        } catch (error) {
+        } catch (_error) {
           return false;
         }
 

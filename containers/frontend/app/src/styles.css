@@ -1,3 +1,5 @@
+/* biome-ignore-all lint/suspicious/noUnknownAtRules: No PostCSS support in BiomeJS (yet?) */
+
 @import "tailwindcss";
 
 /************************************************* HeroUI Setup */

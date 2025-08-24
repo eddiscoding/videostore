@@ -16,7 +16,7 @@ const getDefaultConfig = () => {
 export const createAPIClient = (token: string) => {
   let client = getDefaultConfig();
 
-  if ("" != token) {
+  if ("" !== token) {
     client = client.auth(`Bearer ${token}`);
   }
 
